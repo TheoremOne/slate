@@ -113,8 +113,12 @@ export const Text: TextInterface = {
         const offset = o
         o += length
 
-        // If the range encompases the entire leaf, add the range.
-        if (start.offset <= offset && end.offset >= o) {
+        // If the range encompases the entire leaf (and the range is non-empty), add the range.
+        if (
+          start.offset <= offset &&
+          end.offset >= o &&
+          start.offset < end.offset
+        ) {
           Object.assign(leaf, rest)
           next.push(leaf)
           continue
