@@ -1,0 +1,39 @@
+name: Release Tarball
+
+on:
+  release:
+
+jobs:
+  release-tarball:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: yarn
+          registry-url: https://registry.npmjs.org
+          key: node16
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Prepare release
+        run: yarn prerelease
+
+      - name: Pack tarball
+        run: yarn workspace slate pack
+
+      - name: Upload tarball
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: packages/slate/package.tgz
+          asset_name: slate-${{ github.ref }}.tgz
+          tag: ${{ github.ref }}
